@@ -41,6 +41,8 @@ module GitlabCi
         @commands.unshift(clone_cmd)
       end
 
+      @commands.push(echo_ci_result_cmd)
+
       @run_file.puts %|#!/bin/bash|
       @run_file.puts %|set -e|
       @run_file.puts %|trap 'kill -s INT 0' EXIT|
@@ -69,6 +71,14 @@ module GitlabCi
     def success?
       return nil unless completed?
       @process.exit_code == 0
+    end
+
+    def ci_result
+      if success?
+        if trace =~ /CI_RESULT=([0-9.]+)\n\Z/
+          $1
+        end
+      end
     end
 
     def failed?
@@ -175,6 +185,10 @@ module GitlabCi
       cmd << "git remote set-url origin #{@repo_url}"
       cmd << "git fetch origin"
       cmd.join(" && ")
+    end
+
+    def echo_ci_result_cmd
+      "echo CI_RESULT=$CI_RESULT"
     end
 
     def repo_exists?

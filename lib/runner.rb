@@ -47,7 +47,8 @@ module GitlabCi
     end
 
     def push_build
-      case network.update_build(@current_build.id, @current_build.state, @current_build.trace)
+      case network.update_build(@current_build.id, @current_build.state,
+                                @current_build.trace, @current_build.ci_result)
       when :success
         # nothing to do here
         true

@@ -47,12 +47,13 @@ module GitlabCi
       puts 'failed'
     end
 
-    def update_build(id, state, trace)
+    def update_build(id, state, trace, ci_result)
       broadcast "Submitting build #{id} to coordinator..."
 
       options = default_options.merge(
         state: state,
         trace: trace,
+        percentage: ci_result,
       )
 
       response = self.class.put("#{api_url}/builds/#{id}.json", body: options)
